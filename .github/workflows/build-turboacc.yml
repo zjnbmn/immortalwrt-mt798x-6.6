@@ -17,7 +17,6 @@ repository: zjnbmn/immortalwrt-mt798x-6.6
 ref: openwrt-24.10-6.6
 path: immortalwrt-source
 
-
   - name: Set up build environment
     run: |
       sudo apt-get update
@@ -48,4 +47,3 @@ path: immortalwrt-source
     with:
       name: turboacc-plugin-packages
       path: immortalwrt-source/bin/packages/*/base/luci-app-turboacc-mtk_*.ipk
-
