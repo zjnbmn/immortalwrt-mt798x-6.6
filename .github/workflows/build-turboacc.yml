@@ -48,3 +48,4 @@ path: immortalwrt-source
     with:
       name: turboacc-plugin-packages
       path: immortalwrt-source/bin/packages/*/base/luci-app-turboacc-mtk_*.ipk
+
