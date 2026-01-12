@@ -1,0 +1,50 @@
+name: Build TurboACC MTK Plugin
+on:
+push:
+branches: [ main, master ]
+pull_request:
+branches: [ main, master ]
+workflow_dispatch: # 允许手动触发
+
+jobs:
+build:
+runs-on: ubuntu-latest
+steps:
+- name: Checkout repository
+uses: actions/checkout@v4
+with:
+repository: zjnbmn/immortalwrt-mt798x-6.6
+ref: openwrt-24.10-6.6
+path: immortalwrt-source
+
+
+  - name: Set up build environment
+    run: |
+      sudo apt-get update
+      sudo apt-get install -y build-essential ccache ecj fastjar file g++ gawk \
+      gettext git java-propose-classpath libelf-dev libncurses5-dev \
+      libncursesw5-dev libssl-dev python3 python3-distutils python3-setuptools \
+      rsync subversion swig time xsltproc zlib1g-dev
+
+  - name: Clone feeds and install packages
+    working-directory: ./immortalwrt-source
+    run: |
+      ./scripts/feeds update -a
+      ./scripts/feeds install -a
+
+  - name: Configure TurboACC plugin
+    working-directory: ./immortalwrt-source
+    run: |
+      echo "CONFIG_PACKAGE_luci-app-turboacc-mtk=y" >> .config
+      make defconfig
+
+  - name: Build plugin package
+    working-directory: ./immortalwrt-source
+    run: |
+      make package/mtk/applications/luci-app-turboacc-mtk/compile -j$(nproc) V=s
+
+  - name: Upload artifact
+    uses: actions/upload-artifact@v4
+    with:
+      name: turboacc-plugin-packages
+      path: immortalwrt-source/bin/packages/*/base/luci-app-turboacc-mtk_*.ipk
